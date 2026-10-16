@@ -1,46 +1,144 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
+    <!-- Tag Penting untuk Paparan Telefon Bimbit -->
     <meta charset="UTF-8">
-    <title>Masjid Mart - Kedai Runcit Online</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masjid Mart App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            padding-bottom: 70px; /* Ruang supaya tidak bertindih dengan Menu Bawah */
+            background-color: #f8f9fa;
+        }
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            z-index: 1000;
+        }
+        .bottom-nav a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.75rem;
+        }
+        .bottom-nav a.active {
+            color: #198754;
+            font-weight: bold;
+        }
+        .product-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .product-img {
+            height: 130px;
+            object-fit: cover;
+        }
+        .badge-cart {
+            position: absolute;
+            top: -5px;
+            right: 20%;
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">🕌 Masjid Mart</a>
-            <a href="/admin/products/create" class="btn btn-light btn-sm">+ Tambah Barang (Admin)</a>
-        </div>
-    </nav>
+<body>
 
-    <!-- Senarai Produk -->
-    <div class="container">
-        <h4 class="mb-3">Senarai Barang Runcit</h4>
-        <div class="row">
+    <!-- Header Atas (App Bar) -->
+    <div class="bg-success text-white p-3 app-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="m-0 fw-bold">🕌 Masjid Mart</h5>
+            <small style="font-size: 0.75rem; opacity: 0.9;">Kedai Runcit Komuniti Anda</small>
+        </div>
+        <a href="/admin/products/create" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">+ Admin</a>
+    </div>
+
+    <!-- Mesej Pemberitahuan -->
+    <div class="container mt-2">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show p-2 small mb-2" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close p-2" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+    </div>
+
+    <!-- Senarai Produk (Grid 2 Kolum Khas Telefon) -->
+    <div class="container my-2">
+        <h6 class="fw-bold mb-3 text-secondary">Katalog Barang Runcit</h6>
+        
+        <!-- g-2 membolehkan jarak antara kad produk lebih rapat & kemas di telefon -->
+        <div class="row g-2">
             @forelse($products as $product)
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 shadow-sm">
+                <div class="col-6 col-md-3">
+                    <div class="card product-card h-100 shadow-sm">
                         @if($product->gambar)
-                            <img src="{{ asset('uploads/products/' . $product->gambar) }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                            <img src="{{ asset('uploads/products/' . $product->gambar) }}" class="card-img-top product-img">
                         @else
-                            <img src="https://via.placeholder.com/150" class="card-img-top" style="height: 180px; object-fit: cover;">
+                            <img src="https://via.placeholder.com/150" class="card-img-top product-img">
                         @endif
-                        <div class="card-body d-flex flex-column">
-                            <span class="badge bg-secondary mb-2 w-auto">{{ $product->kategori }}</span>
-                            <h5 class="card-title fs-6">{{ $product->nama_produk }}</h5>
-                            <p class="card-text text-success fw-bold fs-5 mb-1">RM {{ number_format($product->harga, 2) }}</p>
-                            <small class="text-muted mb-3">Stok: {{ $product->stok_semasa }} unit</small>
-                            <button class="btn btn-outline-success mt-auto w-100">+ Tambah ke Troli</button>
+                        
+                        <div class="card-body p-2 d-flex flex-column">
+                            <span class="badge bg-light text-dark border mb-1 align-self-start" style="font-size: 0.65rem;">
+                                {{ $product->kategori }}
+                            </span>
+                            <h6 class="card-title text-truncate mb-1" style="font-size: 0.85rem;" title="{{ $product->nama_produk }}">
+                                {{ $product->nama_produk }}
+                            </h6>
+                            <div class="fw-bold text-success mb-1" style="font-size: 0.95rem;">
+                                RM {{ number_format($product->harga, 2) }}
+                            </div>
+                            <div class="text-muted mb-2" style="font-size: 0.7rem;">
+                                Stok: {{ $product->stok_semasa }}
+                            </div>
+                            
+                            <a href="/cart/add/{{ $product->id }}" class="btn btn-sm btn-success mt-auto w-100 rounded-pill py-1" style="font-size: 0.75rem;">
+                                + Troli
+                            </a>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="col-12">
-                    <div class="alert alert-warning">Belum ada barang runcit dimasukkan. Sila guna butang Tambah Barang.</div>
+                    <div class="alert alert-warning text-center small">Tiada produk ditemui.</div>
                 </div>
             @endforelse
         </div>
     </div>
+
+    <!-- Navigasi Bawah (Bottom Navigation Bar) seperti App Sebenar -->
+    <div class="bottom-nav d-flex justify-content-around text-center py-2">
+        <a href="/" class="active d-flex flex-column align-items-center">
+            <i class="bi bi-house-door-fill fs-5"></i>
+            <span>Utama</span>
+        </a>
+        <a href="/cart" class="position-relative d-flex flex-column align-items-center">
+            <i class="bi bi-cart-fill fs-5"></i>
+            <span>Troli</span>
+            @if(count(session('cart', [])) > 0)
+                <span class="badge bg-danger rounded-circle badge-cart">
+                    {{ count(session('cart', [])) }}
+                </span>
+            @endif
+        </a>
+        <a href="/admin/products/create" class="d-flex flex-column align-items-center">
+            <i class="bi bi-plus-circle-fill fs-5"></i>
+            <span>Tambah</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
