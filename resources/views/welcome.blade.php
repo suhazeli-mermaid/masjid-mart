@@ -62,7 +62,7 @@
             <h5 class="m-0 fw-bold">🕌 Masjid Mart</h5>
             <small style="font-size: 0.75rem; opacity: 0.9;">Kedai Runcit Komuniti Anda</small>
         </div>
-        <a href="/admin/products/create" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">+ Admin</a>
+        <a href="/admin/products" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">⚙️ Senarai Admin</a>
     </div>
 
     <!-- Mesej Pemberitahuan -->
@@ -75,11 +75,43 @@
         @endif
     </div>
 
-    <!-- Senarai Produk (Grid 2 Kolum Khas Telefon) -->
+    <!-- Senarai Produk & Widget Carian -->
     <div class="container my-2">
+
+        <!-- BORANG CARIAN, TAPISAN & SUSUNAN (DITAMBAH DI SINI) -->
+        <form action="/" method="GET" class="card p-2 shadow-sm border-0 mb-3 bg-white">
+            <div class="row g-2">
+                <!-- Petak Carian Kata Kunci -->
+                <div class="col-12 col-md-5">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="🔍 Cari barang (cth: Beras, Milo)...">
+                </div>
+                
+                <!-- Pilihan Kategori -->
+                <div class="col-6 col-md-3">
+                    <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">-- Semua Kategori --</option>
+                        <option value="Makanan Kering" {{ request('category') == 'Makanan Kering' ? 'selected' : '' }}>Makanan Kering</option>
+                        <option value="Minuman" {{ request('category') == 'Minuman' ? 'selected' : '' }}>Minuman</option>
+                        <option value="Barang Basah / Sayur" {{ request('category') == 'Barang Basah / Sayur' ? 'selected' : '' }}>Barang Basah / Sayur</option>
+                        <option value="Keperluan Rumah" {{ request('category') == 'Keperluan Rumah' ? 'selected' : '' }}>Keperluan Rumah</option>
+                    </select>
+                </div>
+
+                <!-- Pilihan Susunan Harga & Butang Cari -->
+                <div class="col-6 col-md-4 d-flex">
+                    <select name="sort" class="form-select form-select-sm me-1" onchange="this.form.submit()">
+                        <option value="">-- Susun Harga --</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Harga: Murah ➔ Mahal</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Harga: Mahal ➔ Murah</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-success px-3">Cari</button>
+                </div>
+            </div>
+        </form>
+
         <h6 class="fw-bold mb-3 text-secondary">Katalog Barang Runcit</h6>
         
-        <!-- g-2 membolehkan jarak antara kad produk lebih rapat & kemas di telefon -->
+        <!-- Grid 2 Kolum Khas Telefon -->
         <div class="row g-2">
             @forelse($products as $product)
                 <div class="col-6 col-md-3">
@@ -112,13 +144,13 @@
                 </div>
             @empty
                 <div class="col-12">
-                    <div class="alert alert-warning text-center small">Tiada produk ditemui.</div>
+                    <div class="alert alert-warning text-center small">Tiada produk ditemui mengikut carian anda.</div>
                 </div>
             @endforelse
         </div>
     </div>
 
-    <!-- Navigasi Bawah (Bottom Navigation Bar) seperti App Sebenar -->
+    <!-- Navigasi Bawah (Bottom Navigation Bar) -->
     <div class="bottom-nav d-flex justify-content-around text-center py-2">
         <a href="/" class="active d-flex flex-column align-items-center">
             <i class="bi bi-house-door-fill fs-5"></i>
